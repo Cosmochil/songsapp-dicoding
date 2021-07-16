@@ -13,7 +13,7 @@ class PlaylistsHandler {
     this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this);
     this.addPlaylistSongHandler = this.addPlaylistSongHandler.bind(this);
     this.getPlaylistSongsHandler = this.getPlaylistSongsHandler.bind(this);
-    this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this);
+    this.deletePlaylistSongHandler = this.deletePlaylistSongHandler.bind(this);
   }
 
   async addPlaylistHandler(request, h) {
@@ -218,7 +218,7 @@ class PlaylistsHandler {
       if (any !== 'songs') {
         throw new NotFoundError('Resource not found');
       }
-      this._validator.validatePlaylistsongPayload(request.payload);
+      this._validator.validatePlaylistSongPayload(request.payload);
       const { songId } = request.payload;
       await this._service.verifyPlaylistAccess(playlistId, userId);
       await this._service.deleteSongFromPlaylist(playlistId, songId);
