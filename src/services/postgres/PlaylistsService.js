@@ -125,7 +125,7 @@ class PlaylistsService {
 
   async deleteSongFromPlaylist(playlistId, songId) {
     const query = {
-      text: 'DELETE from playlistsongs WHERE playlist_id = $1 and song_id = $2 RETURNING id',
+      text: 'DELETE FROM playlistsongs WHERE playlist_id = $1 AND song_id = $2 RETURNING id',
       values: [playlistId, songId],
     };
     const result = await this._pool.query(query);
