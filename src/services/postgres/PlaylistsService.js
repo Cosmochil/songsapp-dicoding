@@ -72,8 +72,8 @@ class PlaylistsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
-      throw new NotFoundError('Playlist yang Anda minta tidak ditemukan');
+    if (!result.rowCount) {
+      throw new InvariantError('Playlist yang Anda minta tidak ditemukan');
     }
 
     const playlist = result.rows[0];
@@ -131,7 +131,7 @@ class PlaylistsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new NotFoundError('Lagu tidak ditemukan di playlist');
+      throw new InvariantError('Lagu gagal dihapus dari playlist');
     }
   }
 }

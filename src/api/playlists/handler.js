@@ -214,11 +214,7 @@ class PlaylistsHandler {
   async deletePlaylistSongHandler(request, h) {
     try {
       const { id: userId } = request.auth.credentials;
-      const { playlistId, any } = request.params;
-      if (any !== 'songs') {
-        throw new NotFoundError('Resource not found');
-      }
-      this._validator.validatePlaylistSongPayload(request.payload);
+      const { playlistId } = request.params;
       const { songId } = request.payload;
       await this._service.verifyPlaylistAccess(playlistId, userId);
       await this._service.deleteSongFromPlaylist(playlistId, songId);
