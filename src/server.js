@@ -24,6 +24,8 @@ const collaborations = require('./api/collaborations');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
 const CollaborationsValidator = require('./validator/collaborations');
 
+const ClientError = require('./exceptions/ClientError')
+
 const init = async () => {
   const collaborationsService = new CollaborationsService();
   const songsService = new SongsService(collaborationsService);
@@ -103,6 +105,21 @@ const init = async () => {
       },
     },
   ]);
+
+  server.ext("onPreResponse", (request, h) => {
+    const { response } = request;
+
+    if (response instanceof ClientError) {
+      const newResponse = h.response({
+        status: "fail",
+        message: response.message,
+      });
+      newResponse.code(response.statusCode);
+      return newResponse;
+    }
+
+    return response.continue || response;
+  });
 
   await server.start();
   console.log(`Server berjalan pada ${server.info.uri}`);
