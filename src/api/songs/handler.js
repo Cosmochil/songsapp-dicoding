@@ -66,14 +66,8 @@ class SongsHandler {
       const songs = await this._service.getSongs();
       return {
         status: 'success',
-        data: {
-          songs: songs.map((song) => ({
-            id: song.id,
-            title: song.title,
-            performer: song.performer,
-          })),
-        },
-      };
+        data: { songs },
+        }
     } catch (error) {
       if (error instanceof ClientError) {
         const response = h.response({
