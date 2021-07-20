@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable no-underscore-dangle */
-const ClientError = require("../../exceptions/ClientError");
+const autoBind = require('auto-bind');
 
 class CollaborationsHandler {
   constructor(collaborationsService, playlistsService, validator) {
@@ -8,9 +8,7 @@ class CollaborationsHandler {
     this._playlistsService = playlistsService;
     this._validator = validator;
 
-    this.postCollaborationHandler = this.postCollaborationHandler.bind(this);
-    this.deleteCollaborationHandler =
-      this.deleteCollaborationHandler.bind(this);
+    autoBind(this);
   }
 
   async postCollaborationHandler(request, h) {

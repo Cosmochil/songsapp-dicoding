@@ -1,18 +1,12 @@
 /* eslint-disable no-underscore-dangle */
-const ClientError = require("../../exceptions/ClientError");
-const NotFoundError = require("../../exceptions/NotFoundError");
+const autoBind = require('auto-bind');
 
 class PlaylistsHandler {
   constructor(service, validator) {
     this._service = service;
     this._validator = validator;
 
-    this.addPlaylistHandler = this.addPlaylistHandler.bind(this);
-    this.getPlaylistsHandler = this.getPlaylistsHandler.bind(this);
-    this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this);
-    this.addPlaylistSongHandler = this.addPlaylistSongHandler.bind(this);
-    this.getPlaylistSongsHandler = this.getPlaylistSongsHandler.bind(this);
-    this.deletePlaylistSongHandler = this.deletePlaylistSongHandler.bind(this);
+    autoBind(this);
   }
 
   async addPlaylistHandler(request, h) {
@@ -82,10 +76,8 @@ class PlaylistsHandler {
 
   async getPlaylistSongsHandler(request, h) {
     const { id: userId } = request.auth.credentials;
-    const { playlistId, any } = request.params;
-    if (any !== "songs") {
-      throw new NotFoundError("Resource not found");
-    }
+    const { playlistId } = request.params;
+
     await this._service.verifyPlaylistAccess(playlistId, userId);
     const songs = await this._service.getPlaylistSongs(playlistId);
     return {
