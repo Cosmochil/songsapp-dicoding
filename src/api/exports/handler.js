@@ -1,36 +1,33 @@
-const autoBind = require('auto-bind');
+const autoBind = require("auto-bind");
 
 class ExportsHandler {
-  constructor(ProducerService, validator, playlistsService) {
-    this._ProducerService = ProducerService;
+  constructor(service, playlistService, validator) {
+    this._service = service;
+    this._playlistService = playlistService;
     this._validator = validator;
-    this._playlistsService = playlistsService;
 
     autoBind(this);
   }
 
-  async postExportSongsHandler(request, h) {
-      this._validator.validateExportSongsPayload(request.payload);
-      const { id: userId } = request.auth.credentials;
-      const { playlistId } = request.params;
+  async postExportPlaylistHandler(request, h) {
+    const { playlistId } = request.params;
+    const { id: credentialId } = request.auth.credentials;
+    await this._playlistService.verifyPlaylistAccess(playlistId, credentialId);
 
-      await this._playlistsService.verifyPlaylistAccess(playlistId, userId);
-      const message = {
-        userId,
-        targetEmail: request.payload.targetEmail,
-      };
+    this._validator.validateExportPlaylistPayload(request.payload);
+    const message = {
+      playlistId,
+      targetEmail: request.payload.targetEmail,
+    };
 
-      await this._ProducerService.sendMessage(
-        "export: songs",
-        JSON.stringify(message)
-      );
+    await this._service.sendMessage("export: playlist", JSON.stringify(message));
 
-      const response = h.response({
-        status: "success",
-        message: "Permintaan Anda dalam antrean",
-      });
-      response.code(201);
-      return response;
+    const response = h.response({
+      status: "success",
+      message: "Permintaan anda sedang diproses",
+    });
+    response.code(201);
+    return response;
   }
 }
 
