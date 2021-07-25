@@ -1,4 +1,5 @@
-const autoBind = require("auto-bind");
+/* eslint-disable no-underscore-dangle */
+const autoBind = require('auto-bind');
 
 class ExportsHandler {
   constructor(service, playlistService, validator) {
@@ -20,11 +21,11 @@ class ExportsHandler {
       targetEmail: request.payload.targetEmail,
     };
 
-    await this._service.sendMessage("export: playlist", JSON.stringify(message));
+    await this._service.sendMessage('export: playlist', JSON.stringify(message));
 
     const response = h.response({
-      status: "success",
-      message: "Permintaan anda sedang diproses",
+      status: 'success',
+      message: 'Permintaan anda sedang diproses',
     });
     response.code(201);
     return response;

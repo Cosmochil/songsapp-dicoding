@@ -4,7 +4,7 @@ class AuthorizationError extends ClientError {
   constructor(message) {
     super(message, 403);
     this.name = 'AuthorizationError';
-    this.message = 'Maaf, anda tidak berhak mengakses resource ini.'
+    this.message = 'Maaf, anda tidak berhak mengakses resource ini.';
   }
 }
 

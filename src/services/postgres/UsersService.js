@@ -78,5 +78,5 @@ class UsersService {
     return id;
   }
 }
-  
+
 module.exports = UsersService;

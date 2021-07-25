@@ -4,7 +4,7 @@ class InvariantError extends ClientError {
   constructor(message) {
     super(message);
     this.name = 'InvariantError';
-    this.message = "Maaf, permintaan anda gagal diproses.";
+    this.message = 'Maaf, permintaan anda gagal diproses.';
   }
 }
 

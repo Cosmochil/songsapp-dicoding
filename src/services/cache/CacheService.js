@@ -1,4 +1,5 @@
-const redis = require("redis");
+/* eslint-disable no-underscore-dangle */
+const redis = require('redis');
 
 class CacheService {
   constructor() {
@@ -6,14 +7,14 @@ class CacheService {
       host: process.env.REDIS_SERVER,
     });
 
-    this._client.on("error", (error) => {
+    this._client.on('error', (error) => {
       console.error(error);
     });
   }
 
   set(key, value, expirationInSecond = 3600) {
     return new Promise((resolve, reject) => {
-      this._client.set(key, value, "EX", expirationInSecond, (error, ok) => {
+      this._client.set(key, value, 'EX', expirationInSecond, (error, ok) => {
         if (error) {
           return reject(error);
         }
@@ -29,7 +30,7 @@ class CacheService {
           return reject(error);
         }
         if (reply === null) {
-          return reject(new Error("Cache tidak ditemukan"));
+          return reject(new Error('Cache tidak ditemukan'));
         }
         return resolve(reply.toString());
       });

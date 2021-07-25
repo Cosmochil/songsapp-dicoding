@@ -6,8 +6,9 @@ const { mapDBToModel } = require('../../utils');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 class SongsService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addSong({
@@ -18,15 +19,7 @@ class SongsService {
 
     const query = {
       text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $7) RETURNING id',
-      values: [
-        id,
-        title,
-        year,
-        performer,
-        genre,
-        duration,
-        insertedAt,
-      ],
+      values: [id, title, year, performer, genre, duration, insertedAt],
     };
 
     const result = await this._pool.query(query);
@@ -34,30 +27,44 @@ class SongsService {
     if (!result.rows[0].id) {
       throw new InvariantError();
     }
-
+    await this._cacheService.delete('songs:allSongs');
     return result.rows[0].id;
   }
 
   async getSongs() {
-    const query = {
-      text: 'SELECT songs.id, songs.title, songs.performer FROM songs',
-    };
-    const result = await this._pool.query(query);
-    return result.rows.map(mapDBToModel);
+    try {
+      const cacheResult = await this._cacheService.get('songs:allSongs');
+      return JSON.parse(cacheResult);
+    } catch (error) {
+      const query = {
+        text: 'SELECT songs.id, songs.title, songs.performer FROM songs',
+      };
+      const result = await this._pool.query(query);
+      await this._cacheService.set(
+        'songs:allSongs',
+        JSON.stringify(result.rows),
+      );
+      return result.rows.map(mapDBToModel);
+    }
   }
 
   async getSongById(id) {
-    const query = {
-      text: 'SELECT * FROM songs WHERE id = $1',
-      values: [id],
-    };
-    const result = await this._pool.query(query);
+    try {
+      const cacheResult = await this._cacheService.get(`songs:${id}`);
+      return JSON.parse(cacheResult);
+    } catch (error) {
+      const query = {
+        text: 'SELECT * FROM songs WHERE id = $1',
+        values: [id],
+      };
+      const result = await this._pool.query(query);
 
-    if (!result.rowCount) {
-      throw new NotFoundError();
+      if (!result.rowCount) {
+        throw new NotFoundError();
+      }
+      await this._cacheService.set(`songs:${id}`, JSON.stringify(result.rows));
+      return result.rows.map(mapDBToModel)[0];
     }
-
-    return result.rows.map(mapDBToModel)[0];
   }
 
   async editSongById(id, {
@@ -74,6 +81,8 @@ class SongsService {
     if (!result.rowCount) {
       throw new NotFoundError();
     }
+    await this._cacheService.delete(`songs:${id}`);
+    await this._cacheService.delete('songs:allSongs');
   }
 
   async deleteSongById(id) {
@@ -87,6 +96,8 @@ class SongsService {
     if (!result.rowCount) {
       throw new NotFoundError();
     }
+    await this._cacheService.delete(`songs:${id}`);
+    await this._cacheService.delete('songs:allSongs');
   }
 }
 

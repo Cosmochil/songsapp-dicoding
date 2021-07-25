@@ -12,7 +12,7 @@ class SongsHandler {
   async postSongHandler(request, h) {
     this._validator.validateSongPayload(request.payload);
     const {
-      title = "untitled",
+      title = 'untitled',
       year,
       performer,
       genre,
@@ -28,8 +28,8 @@ class SongsHandler {
     });
 
     const response = h.response({
-      status: "success",
-      message: "Lagu berhasil ditambahkan",
+      status: 'success',
+      message: 'Lagu berhasil ditambahkan',
       data: {
         songId,
       },
@@ -38,28 +38,30 @@ class SongsHandler {
     return response;
   }
 
-  async getSongsHandler(h) {
+  async getSongsHandler() {
     const songs = await this._service.getSongs();
     return {
-      status: "success",
+      status: 'success',
       data: { songs },
     };
   }
 
-  async getSongByIdHandler(request, h) {
+  async getSongByIdHandler(request) {
     const { songId } = request.params;
     const song = await this._service.getSongById(songId);
     return {
-      status: "success",
+      status: 'success',
       data: {
         song,
       },
     };
   }
 
-  async putSongByIdHandler(request, h) {
+  async putSongByIdHandler(request) {
     this._validator.validateSongPayload(request.payload);
-    const { title, year, performer, genre, duration } = request.payload;
+    const {
+      title, year, performer, genre, duration,
+    } = request.payload;
     const { songId } = request.params;
 
     await this._service.editSongById(songId, {
@@ -71,18 +73,18 @@ class SongsHandler {
     });
 
     return {
-      status: "success",
-      message: "Lagu berhasil diperbarui",
+      status: 'success',
+      message: 'Lagu berhasil diperbarui',
     };
   }
 
-  async deleteSongByIdHandler(request, h) {
+  async deleteSongByIdHandler(request) {
     const { songId } = request.params;
     await this._service.deleteSongById(songId);
 
     return {
-      status: "success",
-      message: "Lagu berhasil dihapus",
+      status: 'success',
+      message: 'Lagu berhasil dihapus',
     };
   }
 }
