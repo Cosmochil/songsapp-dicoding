@@ -1,9 +1,10 @@
+/* eslint-disable no-underscore-dangle */
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
-const Inert = require("@hapi/inert");
-const path = require("path");
+const Inert = require('@hapi/inert');
+const path = require('path');
 
 const songs = require('./api/songs');
 const SongsService = require('./services/postgres/SongsService');
@@ -26,16 +27,16 @@ const collaborations = require('./api/collaborations');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
 const CollaborationsValidator = require('./validator/collaborations');
 
-const _exports = require("./api/exports");
-const ProducerService = require("./services/rabbitmq/ProducerService");
-const ExportsValidator = require("./validator/exports");
+const _exports = require('./api/exports');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
 
-const uploads = require("./api/uploads");
-const StorageService = require("./services/storage/StorageService");
-const UploadsValidator = require("./validator/uploads");
+const uploads = require('./api/uploads');
+const StorageService = require('./services/storage/StorageService');
+const UploadsValidator = require('./validator/uploads');
 
 const ClientError = require('./exceptions/ClientError');
-const CacheService = require("./services/cache/CacheService");
+const CacheService = require('./services/cache/CacheService');
 
 const init = async () => {
   const cacheService = new CacheService();
@@ -44,11 +45,11 @@ const init = async () => {
   const usersService = new UsersService();
   const playlistsService = new PlaylistsService(
     collaborationsService,
-    cacheService
+    cacheService,
   );
   const authenticationsService = new AuthenticationsService();
   const storageService = new StorageService(
-    path.resolve(__dirname, "api/uploads/file/images")
+    path.resolve(__dirname, 'api/uploads/file/images'),
   );
 
   const server = Hapi.server({
@@ -142,12 +143,12 @@ const init = async () => {
     },
   ]);
 
-  server.ext("onPreResponse", (request, h) => {
+  server.ext('onPreResponse', (request, h) => {
     const { response } = request;
 
     if (response instanceof ClientError) {
       const newResponse = h.response({
-        status: "fail",
+        status: 'fail',
         message: response.message,
       });
       newResponse.code(response.statusCode);
